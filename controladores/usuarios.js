@@ -23,7 +23,7 @@ const cadastrarUsuario = async (req, res) => {
 
     const validacaoEmail = await conexao.query('select * from usuarios where email = $1', [email]);
     if (validacaoEmail.rowCount > 0) {
-        res.status(400).json('Esse email já está cadastrado.')
+        return res.status(400).json('Esse email já está cadastrado.')
     }
     try {
         const hash = (await pwd.hash(Buffer.from(senha))).toString("hex")
@@ -105,8 +105,6 @@ const detalharUsuario = async (req, res) => {
 }
 const editarUsuario = async (req, res) => {
     const { nome, email, nome_loja, senha } = req.body;
-
-    console.log(req.usuario.id)
 
     if (!nome) {
         return res.status(400).json('O nome é obrigatório.')

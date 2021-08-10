@@ -13,8 +13,8 @@ CREATE TABLE produtos (
   usuario_id smallint REFERENCES usuarios(id),
   nome text NOT NULL,
   estoque smallint NOT NULL,
-  categoria text NOT NULL,
+  categoria text,
   preco smallint NOT NULL,
   descricao text NOT NULL,
-  imagem text NOT NULL
+  imagem text
 )
