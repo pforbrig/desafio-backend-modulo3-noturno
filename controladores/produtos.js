@@ -73,6 +73,27 @@ const cadastrarProduto = async (req, res) => {
 const atualizarProduto = async (req, res) => {
 }
 const excluirProduto = async (req, res) => {
+    try {
+        const produtoBuscado = await conexao.query('select * from produtos where id = $1', [req.params.id]);
+
+        if (produtoBuscado.rowCount === 0) {
+            return res.status(404).json('Não foi encontrado nenhum produto com o id informado.');
+        }
+        if (produtoBuscado.rows[0].usuario_id !== req.usuario.id) {
+            return res.status(400).json('Você não tem acesso a esse produto.');
+        }
+        const query = 'delete from usuarios where id = $1';
+        const produtoExcluido = await conexao.query(query, [req.params.id]);
+
+        if (produtoExcluido.rowCount === 0) {
+            return res.status(404).json('Não foi possível excluir o pokemon');
+        }
+
+        return res.status(200).json('O pokemon foi excluido com sucesso.');
+
+    } catch (error) {
+        return res.status(400).json(error.message);
+    }
 }
 
 module.exports = {
