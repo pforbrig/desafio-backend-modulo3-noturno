@@ -82,6 +82,7 @@ const logarUsuario = async (req, res) => {
             email: usuario.email,
             nome_loja: usuario.nome_loja,
         }, jwtKey);
+
         const resposta = [{
             "usuario": {
                 id: usuario.id,
@@ -89,7 +90,7 @@ const logarUsuario = async (req, res) => {
                 email: usuario.email,
                 nome_loja: usuario.nome_loja
             }, token
-        }]
+        }];
 
         return res.status(200).json(resposta);
 
@@ -103,6 +104,50 @@ const detalharUsuario = async (req, res) => {
     res.status(200).json(req.usuario);
 }
 const editarUsuario = async (req, res) => {
+    const { nome, email, nome_loja, senha } = req.body;
+
+    console.log(req.usuario.id)
+
+    if (!nome) {
+        return res.status(400).json('O nome é obrigatório.')
+    }
+    if (!email) {
+        return res.status(400).json('O email é obrigatório.')
+    }
+    if (!nome_loja) {
+        return res.status(400).json('O nome da loja é obrigatório.')
+    }
+    if (!senha) {
+        return res.status(400).json('A senha é obrigatória.')
+    }
+    const usuarioAtual = await conexao.query('select * from usuarios where id = $1', [req.usuario.id]);
+
+    if (usuarioAtual.rows[0].email !== email) {
+        const validacaoEmail = await conexao.query('select * from usuarios where email = $1', [email]);
+        if (validacaoEmail.rowCount > 0) {
+            return res.status(400).json('Esse email já está cadastrado.')
+        }
+    }
+    try {
+        const hash = (await pwd.hash(Buffer.from(senha))).toString("hex");
+        const query = `update usuarios set 
+        nome = $1,
+        email = $2,
+        senha = $3,
+        nome_loja = $4
+        where id = $5`;
+
+        const usuarioAtualizado = await conexao.query(query, [nome, email, hash, nome_loja, req.usuario.id]);
+
+        if (usuarioAtualizado.rowCount === 0) {
+            return res.status(400).json('Não foi possível atualizar o usuário');
+        }
+
+        return res.status(200).json('O usuário foi atualizado com sucesso');
+
+    } catch (error) {
+        return res.status(400).json(error.message);
+    }
 }
 module.exports = {
     cadastrarUsuario,
