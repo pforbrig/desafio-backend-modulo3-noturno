@@ -9,16 +9,16 @@ const cadastrarUsuario = async (req, res) => {
     const { nome, nome_loja, email, senha } = req.body;
 
     if (!nome) {
-        res.status(400).json('O nome é obrigatório.')
+        return res.status(400).json('O nome é obrigatório.')
     }
     if (!nome_loja) {
-        res.status(400).json('O nome da loja é obrigatório.')
+        return res.status(400).json('O nome da loja é obrigatório.')
     }
     if (!senha) {
-        res.status(400).json('A senha é obrigatória.')
+        return res.status(400).json('A senha é obrigatória.')
     }
     if (!email) {
-        res.status(400).json('O email é obrigatório.')
+        return res.status(400).json('O email é obrigatório.')
     }
 
     const validacaoEmail = await conexao.query('select * from usuarios where email = $1', [email]);
@@ -45,10 +45,10 @@ const logarUsuario = async (req, res) => {
     const { email, senha } = req.body;
 
     if (!senha) {
-        res.status(400).json('A senha é obrigatória.')
+        return res.status(400).json('A senha é obrigatória.')
     }
     if (!email) {
-        res.status(400).json('O email é obrigatório.')
+        return res.status(400).json('O email é obrigatório.')
     }
 
     try {
