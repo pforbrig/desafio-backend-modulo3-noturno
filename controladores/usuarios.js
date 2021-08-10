@@ -100,6 +100,7 @@ const logarUsuario = async (req, res) => {
 }
 
 const detalharUsuario = async (req, res) => {
+    res.status(200).json(req.usuario);
 }
 const editarUsuario = async (req, res) => {
 }

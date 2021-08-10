@@ -4,7 +4,7 @@ CREATE TABLE usuarios (
   id serial primary key,
   nome text NOT NULL,
   nome_loja text NOT NULL,
-  email text NOT NULL,
+  email text NOT NULL UNIQUE,
   senha text NOT NULL
 )
 
