@@ -16,7 +16,7 @@ const listarProdutos = async (req, res) => {
             const query = `select * from produtos where usuario_id = $1`;
             const produtosCadastrados = await conexao.query(query, [req.usuario.id]);
             if (produtosCadastrados.rowCount === 0) {
-                return res.status(200).json('Você não tem produtos cadastrados.');
+                return res.status(400).json('Você não tem produtos cadastrados.');
             }
 
             return res.status(200).json(produtosCadastrados.rows);
