@@ -23,6 +23,8 @@
     "jsonwebtoken": "^8.5.1",
     "nodemon": "^2.0.12",
     "pg": "^8.7.1",
-    "secure-password": "^4.0.0"
+    "secure-password": "^4.0.0",
+    "yup": "^0.32.9",
+    "yup-locales": "^1.2.0"
   }
 }
