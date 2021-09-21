@@ -12,7 +12,7 @@ rotas.post('/login', usuarios.logarUsuario);
 
 rotas.use(verificaLogin);
 
-rotas.get('/perfil', usuarios.detalharUsuario);
+rotas.get('/perfil', usuarios.exibirUsuario);
 rotas.put('/perfil', usuarios.editarUsuario);
 
 
@@ -20,7 +20,7 @@ rotas.put('/perfil', usuarios.editarUsuario);
 rotas.get('/produtos', produtos.listarProdutos);
 rotas.get('/produtos/:id', produtos.exibirProduto);
 rotas.post('/produtos', produtos.cadastrarProduto);
-rotas.put('/produtos/:id', produtos.atualizarProduto);
+rotas.put('/produtos/:id', produtos.editarProduto);
 rotas.delete('/produtos/:id', produtos.excluirProduto);
 
 module.exports = rotas;

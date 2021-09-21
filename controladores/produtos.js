@@ -1,6 +1,5 @@
 const conexao = require('../conexao');
 const schemaCadastroProduto = require('../validacoes/schemaCadastroProduto');
-const schemaLogin = require('../validacoes/schemaLogin');
 
 const listarProdutos = async (req, res) => {
     const { categoria } = req.query;
@@ -66,7 +65,7 @@ const cadastrarProduto = async (req, res) => {
         return res.status(400).json(error.message);
     }
 }
-const atualizarProduto = async (req, res) => {
+const editarProduto = async (req, res) => {
     const { nome, estoque, preco, descricao, imagem, categoria } = req.body;
 
     try {
@@ -122,6 +121,6 @@ module.exports = {
     listarProdutos,
     exibirProduto,
     cadastrarProduto,
-    atualizarProduto,
+    editarProduto,
     excluirProduto
 }

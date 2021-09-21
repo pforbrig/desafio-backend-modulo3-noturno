@@ -2,30 +2,24 @@ const conexao = require('../conexao');
 const securePassword = require("secure-password");
 const jwt = require("jsonwebtoken");
 const jwtKey = require('../jwtsecret');
+const schemaCadastroUsuario = require('../validacoes/schemaCadastroUsuario');
+const schemaLogin = require('../validacoes/schemaLogin');
+
 
 const pwd = securePassword()
 
 const cadastrarUsuario = async (req, res) => {
     const { nome, nome_loja, email, senha } = req.body;
 
-    if (!nome) {
-        return res.status(400).json('O nome é obrigatório.')
-    }
-    if (!nome_loja) {
-        return res.status(400).json('O nome da loja é obrigatório.')
-    }
-    if (!senha) {
-        return res.status(400).json('A senha é obrigatória.')
-    }
-    if (!email) {
-        return res.status(400).json('O email é obrigatório.')
-    }
-
     const validacaoEmail = await conexao.query('select * from usuarios where email = $1', [email]);
+
     if (validacaoEmail.rowCount > 0) {
         return res.status(400).json('Esse email já está cadastrado.')
     }
+
     try {
+        await schemaCadastroUsuario.validate(req.body);
+
         const hash = (await pwd.hash(Buffer.from(senha))).toString("hex")
         const query = `insert into usuarios (nome, nome_loja, email, senha) 
         values ($1, $2, $3, $4)`;
@@ -44,14 +38,9 @@ const cadastrarUsuario = async (req, res) => {
 const logarUsuario = async (req, res) => {
     const { email, senha } = req.body;
 
-    if (!senha) {
-        return res.status(400).json('A senha é obrigatória.')
-    }
-    if (!email) {
-        return res.status(400).json('O email é obrigatório.')
-    }
-
     try {
+        await schemaLogin.validate(req.body);
+
         const usuarios = await conexao.query('select * from usuarios where email = $1', [email]);
         if (usuarios.rowCount === 0) {
             return res.status(404).json('Usuario não encontrado.');
@@ -96,38 +85,28 @@ const logarUsuario = async (req, res) => {
 
 
     } catch (error) {
-        console.log(error.message);
         return res.status(400).json(error.message);
     }
 }
 
-const detalharUsuario = async (req, res) => {
+const exibirUsuario = async (req, res) => {
     res.status(200).json(req.usuario);
 }
 const editarUsuario = async (req, res) => {
     const { nome, email, nome_loja, senha } = req.body;
 
-    if (!nome) {
-        return res.status(400).json('O nome é obrigatório.')
-    }
-    if (!email) {
-        return res.status(400).json('O email é obrigatório.')
-    }
-    if (!nome_loja) {
-        return res.status(400).json('O nome da loja é obrigatório.')
-    }
-    if (!senha) {
-        return res.status(400).json('A senha é obrigatória.')
-    }
     const usuarioAtual = await conexao.query('select * from usuarios where id = $1', [req.usuario.id]);
 
     if (usuarioAtual.rows[0].email !== email) {
         const validacaoEmail = await conexao.query('select * from usuarios where email = $1', [email]);
+
         if (validacaoEmail.rowCount > 0) {
             return res.status(400).json('Esse email já está cadastrado.')
         }
     }
     try {
+        await schemaCadastroUsuario.validate(req.body);
+
         const hash = (await pwd.hash(Buffer.from(senha))).toString("hex");
         const query = `update usuarios set 
         nome = $1,
@@ -151,6 +130,6 @@ const editarUsuario = async (req, res) => {
 module.exports = {
     cadastrarUsuario,
     logarUsuario,
-    detalharUsuario,
+    exibirUsuario,
     editarUsuario
 }
