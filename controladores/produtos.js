@@ -1,4 +1,6 @@
 const conexao = require('../conexao');
+const schemaCadastroProduto = require('../validacoes/schemaCadastroProduto');
+const schemaLogin = require('../validacoes/schemaLogin');
 
 const listarProdutos = async (req, res) => {
     const { categoria } = req.query;
@@ -47,26 +49,9 @@ const exibirProduto = async (req, res) => {
 const cadastrarProduto = async (req, res) => {
     const { nome, estoque, preco, descricao, imagem, categoria } = req.body;
 
-    if (!nome) {
-        return res.status(400).json('O nome é obrigatório.')
-    }
-    if (!estoque) {
-        return res.status(400).json('A quantidade em estoque é obrigatória.')
-    }
-    if (!preco) {
-        return res.status(400).json('O preço é obrigatório.')
-    }
-    if (!descricao) {
-        return res.status(400).json('A descrição é obrigatória')
-    }
-    if (isNaN(Number(estoque))) {
-        return res.status(400).json('A quantidade em estoque deve ser um número.');
-    }
-    if (isNaN(Number(preco))) {
-        return res.status(400).json('O preço deve ser um número.');
-    }
-
     try {
+        await schemaCadastroProduto.validate(req.body);
+
         const query = `insert into produtos (usuario_id, nome, estoque, categoria, preco, descricao, imagem) 
         values ($1, $2, $3, $4, $5, $6, $7)`;
         const produtoCadastrado = await conexao.query(query, [req.usuario.id, nome, estoque, categoria, preco, descricao, imagem]);
